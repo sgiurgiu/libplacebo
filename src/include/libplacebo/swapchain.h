@@ -80,6 +80,10 @@ PL_API bool pl_swapchain_resize(pl_swapchain sw, int *width, int *height);
 // PL_COLOR_TRC_UNKNOWN, then it instead defaults to PL_COLOR_TRC_PQ.
 PL_API void pl_swapchain_colorspace_hint(pl_swapchain sw, const struct pl_color_space *csp);
 
+// Like `pl_swapchain_colorspace_hint`, but does not lock the swapchain.
+PL_API void pl_swapchain_colorspace_hint_unlocked(pl_swapchain sw,
+                                                  const struct pl_color_space *csp);
+
 // The struct used to hold the results of `pl_swapchain_start_frame`
 struct pl_swapchain_frame {
     // A texture representing the framebuffer users should use for rendering.

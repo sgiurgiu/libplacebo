@@ -1052,6 +1052,15 @@ static void vk_sw_colorspace_hint(pl_swapchain sw, const struct pl_color_space *
     pl_mutex_unlock(&p->lock);
 }
 
+static void vk_sw_colorspace_hint_unlocked(pl_swapchain sw,
+                                           const struct pl_color_space *csp)
+{
+    struct priv *p = PL_PRIV(sw);
+    bool ok = pick_surf_format(sw, csp);
+    set_hdr_metadata(p, &csp->hdr);
+    pl_assert(ok);
+}
+
 bool pl_vulkan_swapchain_suboptimal(pl_swapchain sw)
 {
     struct priv *p = PL_PRIV(sw);
@@ -1059,11 +1068,12 @@ bool pl_vulkan_swapchain_suboptimal(pl_swapchain sw)
 }
 
 static const struct pl_sw_fns vulkan_swapchain = {
-    .destroy            = vk_sw_destroy,
-    .latency            = vk_sw_latency,
-    .resize             = vk_sw_resize,
-    .colorspace_hint    = vk_sw_colorspace_hint,
-    .start_frame        = vk_sw_start_frame,
-    .submit_frame       = vk_sw_submit_frame,
-    .swap_buffers       = vk_sw_swap_buffers,
+    .destroy = vk_sw_destroy,
+    .latency = vk_sw_latency,
+    .resize = vk_sw_resize,
+    .colorspace_hint = vk_sw_colorspace_hint,
+    .colorspace_hint_unlocked = vk_sw_colorspace_hint_unlocked,
+    .start_frame = vk_sw_start_frame,
+    .submit_frame = vk_sw_submit_frame,
+    .swap_buffers = vk_sw_swap_buffers,
 };

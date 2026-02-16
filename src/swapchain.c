@@ -70,6 +70,24 @@ void pl_swapchain_colorspace_hint(pl_swapchain sw, const struct pl_color_space *
     impl->colorspace_hint(sw, &fix);
 }
 
+void pl_swapchain_colorspace_hint_unlocked(pl_swapchain sw,
+                                           const struct pl_color_space *csp)
+{
+    const struct pl_sw_fns *impl = PL_PRIV(sw);
+    if (!impl->colorspace_hint_unlocked)
+        return;
+
+    struct pl_swapchain_colors fix = pl_color_space_srgb;
+    if (csp)
+    {
+        fix = *csp;
+        // Ensure we have valid values set for all the fields
+        pl_color_space_infer(&fix);
+    }
+
+    impl->colorspace_hint_unlocked(sw, &fix);
+}
+
 bool pl_swapchain_start_frame(pl_swapchain sw,
                               struct pl_swapchain_frame *out_frame)
 {
