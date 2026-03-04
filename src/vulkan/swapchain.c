@@ -1039,19 +1039,6 @@ static bool vk_sw_resize(pl_swapchain sw, int *width, int *height)
     return ok;
 }
 
-static void vk_sw_colorspace_hint(pl_swapchain sw, const struct pl_color_space *csp)
-{
-    struct priv *p = PL_PRIV(sw);
-    pl_mutex_lock(&p->lock);
-
-    // This should never fail if the swapchain already exists
-    bool ok = pick_surf_format(sw, csp);
-    set_hdr_metadata(p, &csp->hdr);
-    pl_assert(ok);
-
-    pl_mutex_unlock(&p->lock);
-}
-
 static void vk_sw_colorspace_hint_unlocked(pl_swapchain sw,
                                            const struct pl_color_space *csp)
 {
@@ -1059,6 +1046,17 @@ static void vk_sw_colorspace_hint_unlocked(pl_swapchain sw,
     bool ok = pick_surf_format(sw, csp);
     set_hdr_metadata(p, &csp->hdr);
     pl_assert(ok);
+}
+
+static void vk_sw_colorspace_hint(pl_swapchain sw, const struct pl_color_space *csp)
+{
+    struct priv *p = PL_PRIV(sw);
+    pl_mutex_lock(&p->lock);
+
+    // This should never fail if the swapchain already exists
+    vk_sw_colorspace_hint_unlocked(sw, csp);
+
+    pl_mutex_unlock(&p->lock);
 }
 
 bool pl_vulkan_swapchain_suboptimal(pl_swapchain sw)
